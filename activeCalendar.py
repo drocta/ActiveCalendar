@@ -44,8 +44,6 @@ class ActiveCalendar:
             self.nextEndTime = self.eventsActive[0]["DTEND"].dt
         else:
             self.nextEndTime = datetime.datetime.max
-
-        
         self.nextTime = min(self.nextStartTime, self.nextEndTime)
         #maybe should use a priority queue to store the events to start and end?
 
@@ -83,6 +81,11 @@ class ActiveCalendar:
             remaining = []
         self.activeEvents = remaining + newlyActive
         self.activeEvents.sort(key = lambda ev:ev["DTEND"].dt)
+        if(len(self.eventsActive) > 0):
+            self.nextEndTime = self.eventsActive[0]["DTEND"].dt
+        else:
+            self.nextEndTime = datetime.datetime.max
+        self.nextTime = min(self.nextStartTime, self.nextEndTime)
         self.now = now
         return (newlyActive,newlyInactive,missed)
         
