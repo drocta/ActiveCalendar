@@ -70,7 +70,7 @@ class ActiveCalendar:
         m = len(self.activeEvents)
         for i in range(m):
             ev = self.activeEvents[i]
-            endDT = ev["ENDDT"].dt
+            endDT = ev["DTEND"].dt
             if(now < endDT):
                 newlyInactive = self.activeEvents[0:i]
                 remaining = self.activeEvents[i:]
