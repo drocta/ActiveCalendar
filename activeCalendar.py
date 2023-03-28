@@ -26,10 +26,8 @@ class ActiveCalendar:
         self.today = datetime.date.today()
         events = self.unfCal.at(self.today)
         self.n = len(events)
-        self.eventsByStart = events.copy()
+        self.eventsByStart = events
         self.eventsByStart.sort(key=lambda ev:ev["DTSTART"].dt)
-        self.eventsByEnd = events
-        self.eventsByEnd.sort(key=lambda ev:ev["DTEND"].dt)
         self.now = datetime.datetime.now()
         self.activeEvents = []
         for i,ev in enumerate(self.eventsByStart):
@@ -38,21 +36,18 @@ class ActiveCalendar:
                 self.nextStartTime = startDT
                 self.nextStartIndex = i
                 break
-            elif(self.now < ev["DTEND"].dt):
+            elif(self.now <= ev["DTEND"].dt):
                 self.eventsActive.append(ev)
             pass
-        for i,ev in enumerate(self.eventsByEnd):
-            endDT = ev["DTEND"].dt
-            if(self.now < endDT):
-                self.nextEndTime = endDT
-                self.nextEndIndex = i
-                break
-            pass
         self.eventsActive.sort(key=lambda ev:ev["DTEND"].dt)
+        if(len(self.eventsActive) > 0):
+            self.nextEndTime = self.eventsActive[0]["DTEND"].dt
+        else:
+            self.nextEndTime = datetime.datetime.max
+
+        
         self.nextTime = min(self.nextStartTime, self.nextEndTime)
         #maybe should use a priority queue to store the events to start and end?
-        #self.eventsByEnd and self.nextEndIndex are probably unnecessary,
-        #  as only need to loop through the events marked as active.
 
     def wake(self):
         """call this to update the current active list"""
