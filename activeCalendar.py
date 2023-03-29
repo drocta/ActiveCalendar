@@ -70,6 +70,9 @@ class ActiveCalendar:
                 self.nextStartTime = startDT
                 self.nextStartIndex = i
                 break
+        else:#i.e. if there are no events today which haven't started yet
+            self.nextStartTime = datetime.datetime.max
+            self.nextStartIndex = self.n # i.e. there is no next event
         m = len(self.activeEvents)
         for i in range(m):
             ev = self.activeEvents[i]
