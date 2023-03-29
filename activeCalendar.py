@@ -39,6 +39,9 @@ class ActiveCalendar:
             elif(self.now <= ev["DTEND"].dt):
                 self.eventsActive.append(ev)
             pass
+        else:#i.e. if there are no events today which haven't started yet
+            self.nextStartTime = datetime.datetime.max
+            self.nextStartIndex = self.n # i.e. there is no next event
         self.eventsActive.sort(key=lambda ev:ev["DTEND"].dt)
         if(len(self.eventsActive) > 0):
             self.nextEndTime = self.eventsActive[0]["DTEND"].dt
@@ -55,7 +58,7 @@ class ActiveCalendar:
         #newlyInactive = []
         missed = []
         
-        for i in range(self.nextStartIndex,n):
+        for i in range(self.nextStartIndex,self.n):
             ev = self.eventsByStart[i]
             startDT = ev["DTSTART"].dt
             if(startDT <= now):
@@ -88,5 +91,6 @@ class ActiveCalendar:
         self.nextTime = min(self.nextStartTime, self.nextEndTime)
         self.now = now
         return (newlyActive,newlyInactive,missed)
-        
+
+    updateActiveEvents = wake
 
