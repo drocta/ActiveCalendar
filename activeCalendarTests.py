@@ -1,7 +1,6 @@
 
 """unit test for ActiveCalendar"""
 import unittest
-from unittest.mock import MagicMock, patch
 import time_machine
 from activeCalendar import ActiveCalendar
 import icalendar
@@ -46,6 +45,11 @@ class TestActiveCalendar(unittest.TestCase):
         self.assertEqual(len(newlyInactive),1)
         self.assertEqual(newlyInactive[0]['summary'], 'Event 1')
         
-        
-        
+        # Move the clock to 2:00 PM and update the active events
+        with time_machine.travel(datetime.datetime(2023, 3, 6, 14, 0,tzinfo=pytz.utc),tick=False):
+            active, newlyInactive, missed = activeCalendar.wake()
+        self.assertEqual(missed, [])
+        self.assertEqual(newlyInactive, [])
+        self.assertEqual(len(active), 1)
+        self.assertEqual(active[0]['summary'], 'Event 2')
         
