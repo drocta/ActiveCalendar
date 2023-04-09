@@ -30,21 +30,21 @@ class TestActiveCalendar(unittest.TestCase):
 
         #move the clock to 10:30AM and update the active events:
         with time_machine.travel(datetime.datetime(2023, 3, 6, 10, 30,tzinfo=pytz.utc),tick=False):
-            active, inactive, missed = activeCalendar.wake()
+            active, newlyInactive, missed = activeCalendar.wake()
 
         #check that active, inactive, and missed are correct
         self.assertEqual(missed,[])
-        self.assertEqual(inactive,[])
+        self.assertEqual(newlyInactive,[])
         self.assertEqual(len(active),1)
         self.assertEqual(active[0]['summary'],'Event 1')
 
         # Move the clock to 11:30 AM and update the active events
         with time_machine.travel(datetime.datetime(2023, 3, 6, 11, 30,tzinfo=pytz.utc),tick=False):
-            active, inactive, missed = activeCalendar.wake()
+            active, newlyInactive, missed = activeCalendar.wake()
         self.assertEqual(missed, [])
         self.assertEqual(active, [])
-        self.assertEqual(len(inactive),1)
-        self.assertEqual(inactive[0]['summary'], 'Event 1')
+        self.assertEqual(len(newlyInactive),1)
+        self.assertEqual(newlyInactive[0]['summary'], 'Event 1')
         
         
         
