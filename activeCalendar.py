@@ -78,7 +78,7 @@ class ActiveCalendar:
                 self.nextStartIndex = i
                 break
         else:#i.e. if there are no events today which haven't started yet
-            self.nextStartTime = datetime.datetime.max
+            self.nextStartTime = datetime.datetime.max.replace(tzinfo=pytz.utc)
             self.nextStartIndex = self.n # i.e. there is no next event
         m = len(self.activeEvents)
         for i in range(m):
@@ -97,7 +97,7 @@ class ActiveCalendar:
         if(len(self.activeEvents) > 0):
             self.nextEndTime = self.activeEvents[0]["DTEND"].dt
         else:
-            self.nextEndTime = datetime.datetime.max
+            self.nextEndTime = datetime.datetime.max.replace(tzinfo=pytz.utc)
         self.nextTime = min(self.nextStartTime, self.nextEndTime)
         self.now = now
         return (newlyActive,newlyInactive,missed)
