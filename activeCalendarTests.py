@@ -37,6 +37,15 @@ class TestActiveCalendar(unittest.TestCase):
         self.assertEqual(inactive,[])
         self.assertEqual(len(active),1)
         self.assertEqual(active[0]['summary'],'Event 1')
+
+        # Move the clock to 11:30 AM and update the active events
+        with time_machine.travel(datetime.datetime(2023, 3, 6, 11, 30,tzinfo=pytz.utc),tick=False):
+            active, inactive, missed = activeCalendar.wake()
+        self.assertEqual(missed, [])
+        self.assertEqual(active, [])
+        self.assertEqual(len(inactive),1)
+        self.assertEqual(inactive[0]['summary'], 'Event 1')
+        
         
         
         
