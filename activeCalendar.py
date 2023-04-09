@@ -9,6 +9,7 @@ are currently active.
 import datetime
 import icalendar
 import recurring_ical_events
+import pytz
 
 
 
@@ -28,32 +29,38 @@ class ActiveCalendar:
         self.n = len(events)
         self.eventsByStart = events
         self.eventsByStart.sort(key=lambda ev:ev["DTSTART"].dt)
-        self.now = datetime.datetime.now()
+        self.now = datetime.datetime.now(datetime.timezone.utc)
+        #TODO : should the datetime.now have utc timezone or local timezone?
         self.activeEvents = []
         for i,ev in enumerate(self.eventsByStart):
             startDT = ev["DTSTART"].dt
             if(self.now < startDT):
                 self.nextStartTime = startDT
+                #print("startDT.tzinfo="+repr(startDT.tzinfo))
                 self.nextStartIndex = i
                 break
             elif(self.now <= ev["DTEND"].dt):
-                self.eventsActive.append(ev)
+                self.activeEvents.append(ev)
             pass
         else:#i.e. if there are no events today which haven't started yet
-            self.nextStartTime = datetime.datetime.max
+            self.nextStartTime = datetime.datetime.max.replace(tzinfo=pytz.utc)
             self.nextStartIndex = self.n # i.e. there is no next event
-        self.eventsActive.sort(key=lambda ev:ev["DTEND"].dt)
-        if(len(self.eventsActive) > 0):
-            self.nextEndTime = self.eventsActive[0]["DTEND"].dt
+        self.activeEvents.sort(key=lambda ev:ev["DTEND"].dt)
+        if(len(self.activeEvents) > 0):
+            self.nextEndTime = self.activeEvents[0]["DTEND"].dt
         else:
-            self.nextEndTime = datetime.datetime.max
+            self.nextEndTime = datetime.datetime.max.replace(tzinfo=pytz.utc)
+        #print("self.nextStartTime.tzinfo="+repr(self.nextStartTime.tzinfo))
+        #print("self.nextEndTime.tzinfo="+repr(self.nextEndTime.tzinfo))
+        #print("self.nextEndTime="+repr(self.nextEndTime))
         self.nextTime = min(self.nextStartTime, self.nextEndTime)
         #maybe should use a priority queue to store the events to start and end?
 
     def wake(self):
         """call this to update the current active list"""
         then = self.now
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(datetime.timezone.utc)
+        #TODO : should the datetime.now have utc timezone or local timezone?
         newlyActive = []
         #newlyInactive = []
         missed = []
@@ -83,12 +90,12 @@ class ActiveCalendar:
                 break
         else: # meaning, if there was no break
             #so, all of the end dates in the activeEvents list are in the past
-            newlyInactive = self.activeEventsList
+            newlyInactive = self.activeEvents
             remaining = []
         self.activeEvents = remaining + newlyActive
         self.activeEvents.sort(key = lambda ev:ev["DTEND"].dt)
-        if(len(self.eventsActive) > 0):
-            self.nextEndTime = self.eventsActive[0]["DTEND"].dt
+        if(len(self.activeEvents) > 0):
+            self.nextEndTime = self.activeEvents[0]["DTEND"].dt
         else:
             self.nextEndTime = datetime.datetime.max
         self.nextTime = min(self.nextStartTime, self.nextEndTime)
