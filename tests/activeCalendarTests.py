@@ -2,7 +2,7 @@
 """unit test for ActiveCalendar"""
 import unittest
 import time_machine
-from activeCalendar import ActiveCalendar
+from active_calendar import ActiveCalendar
 import icalendar
 import datetime
 import pytz
