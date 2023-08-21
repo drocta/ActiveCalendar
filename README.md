@@ -7,7 +7,8 @@ It will also return a tuple `(newlyActive,newlyInactive,missed`)
 which are each lists of, respectively:  
 * events that became active since `wake` was last called,
 * events that were active at the time `wake` was last called, but are no-longer
-* events that both became active and then became inactive since `wake` was last called.
+* events that both became active and then became inactive since `wake` was last called.  
+
 It also updates a field `nextTime` which stores the datetime for the soonest time that any event will become active or become inactive.  
 The intended use is that this value be used to determine when to next call the method `wake`.  
 This module is not yet well-tested,  
